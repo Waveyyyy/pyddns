@@ -14,22 +14,26 @@ class Api:
 
         }
 
+    def __buildrequest(self):
+        """Builds the request with all of the required info"""
+        pass
+
     def getzoneid(self):
         """Get the zone identifier, needed to make most requests"""
         pass
 
-    def getuserid():
+    def getuserid(self):
         """Get the user identifier, also needed to make most requests"""
         pass
 
-    def getcurrentip():
+    def getcurrentip(self):
         """Get the current IP from the DNS A record"""
         pass
 
-    def updateip():
+    def updateip(self):
         """Update the DNS A record with the IP returned by pub.getexternip()"""
         pass
 
-    def __verifyupdate(getcurrentip):
+    def __verifyupdate(self):
         """Verify if the DNS A record was successfully updated"""
         pass
