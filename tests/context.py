@@ -8,3 +8,6 @@ sys.path.insert(0, os.path.abspath(
 
 # import the library
 import ddns
+
+# in test files add:
+# from .context import ddns
