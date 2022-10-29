@@ -6,9 +6,9 @@ import externip as pub
 class Api:
     def __init__(self):
         self.info = {
-            'zoneid': self.getzoneid(),
-            'userid': self.getuserid(),
-            'old_ip': self.getcurrentip(),
+            'zoneid': None,
+            'userid': None,
+            'old_ip': None,
             'new_ip': pub.externip(),
             # 'last_updated': update_time,
 
@@ -20,6 +20,10 @@ class Api:
 
     def getzoneid(self):
         """Get the zone identifier, needed to make most requests"""
+        # curl -X GET "https://api.cloudflare.com/client/v4/zones" \
+        # -H "X-Auth-Email: user@example.com" \
+        # -H "X-Auth-Key: c2547eb745079dac9320b638f5e225cf483cc5cfdda41" \
+        # -H "Content-Type: application/json"
         pass
 
     def getuserid(self):
