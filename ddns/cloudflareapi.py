@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 import requests
 import externip as pub
+from dotenv import load_dotenv
+import os
 
 
 class Api:
@@ -9,13 +11,21 @@ class Api:
             'zoneid': None,
             'userid': None,
             'old_ip': None,
-            'new_ip': pub.externip(),
+            'new_ip': pub.getexternip(),
+            'domain': None,
             # 'last_updated': update_time,
 
+        }
+        # headers used for api requests
+        self.Headers = {
+            'X-Auth-Email' : None,
+            'X-Auth-Key' : None,
+            'Content-Type': 'application/json',
         }
 
     def __buildrequest(self):
         """Builds the request with all of the required info"""
+        url_base = 'https://api.cloudflare.com/client/v4/'
         pass
 
     def getzoneid(self):
