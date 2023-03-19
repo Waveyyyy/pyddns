@@ -23,10 +23,11 @@ class Api:
             'Content-Type': 'application/json',
         }
 
-    def __buildrequest(self):
-        """Builds the request with all of the required info"""
+    def __buildurl(self, endpoint):
+        """Creates the url from the base and the desired endpoint"""
         url_base = 'https://api.cloudflare.com/client/v4/'
-        pass
+        url = '/'.join([url_base, endpoint])
+        return url
 
     def getzoneid(self):
         """Get the zone identifier, needed to make most requests"""
@@ -34,6 +35,8 @@ class Api:
         # -H "X-Auth-Email: user@example.com" \
         # -H "X-Auth-Key: c2547eb745079dac9320b638f5e225cf483cc5cfdda41" \
         # -H "Content-Type: application/json"
+        with requests.Session() as session:
+            pass
         pass
 
     def getuserid(self):
@@ -51,3 +54,6 @@ class Api:
     def __verifyupdate(self):
         """Verify if the DNS A record was successfully updated"""
         pass
+
+if __name__ == "__main__":
+    pass
