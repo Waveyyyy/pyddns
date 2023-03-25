@@ -2,3 +2,4 @@
 .project
 ddns/.project
 .env
+__pycache__
