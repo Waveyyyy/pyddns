@@ -1,3 +1,4 @@
 .cache/
 .project
 ddns/.project
+.env
