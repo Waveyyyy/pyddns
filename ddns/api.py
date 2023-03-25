@@ -37,6 +37,7 @@ class Api:
         - Success -- returns IP address as a string
         - Failure -- returns None
         """
+        # TODO: decide if this function returns just ip or whole A record
         # query for all DNS records for a domain
         response = requests.get(self.__buildurl(
             f'zones/{self.info["zoneid"]}/dns_records/'),
@@ -59,13 +60,14 @@ class Api:
         """Update the DNS A record with the IP returned by pub.getexternip()"""
         pass
 
-    def __updateInfo(self):
+    def updateInfo(self):
         """Update the self.info dictionary with new information"""
+        # find best way to check all values in self.info
         pass
 
 
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    a.getARecordIP()
+    a.info["old_ip"] = a.getARecordIP()
     pprint(a.info)
