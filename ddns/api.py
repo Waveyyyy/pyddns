@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
 import requests
 import externip as pub
-from dotenv import load_dotenv
-import os
+from dotenv import dotenv_values
 
 
 class Api:
@@ -18,8 +17,9 @@ class Api:
         }
         # headers used for api requests
         self.Headers = {
-            'X-Auth-Email' : None,
-            'X-Auth-Key' : None,
+            'X-Auth-Email': dotenv_values(".env")["AUTH_EMAIL"],
+            'X-Auth-Key': dotenv_values(".env")["API_TOKEN"],
+            'Authorization': f'Bearer {dotenv_values(".env")["AUTHORIZATION"]}',
             'Content-Type': 'application/json',
         }
 
@@ -56,4 +56,5 @@ class Api:
         pass
 
 if __name__ == "__main__":
-    pass
+    a = Api()
+    print(a.Headers)
