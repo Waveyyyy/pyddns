@@ -29,16 +29,15 @@ class Api:
         url = '/'.join([url_base, endpoint])
         return url
 
-    def getARecordIP(self):
-        """Get the current IP from the DNS A record
+    def getARecord(self):
+        """Get the current DNS A record
 
         - Checks all DNS records of a domain
         - Checks each record looking for the A record
-        - Success -- returns IP address as a string
+        - Success -- returns A record as a dictionary
         - Failure -- returns None
         """
-        # TODO: decide if this function returns just ip or whole A record
-        # query for all DNS records for a domain
+        # request all DNS records for given zoneid
         response = requests.get(self.__buildurl(
             f'zones/{self.info["zoneid"]}/dns_records/'),
             headers=self.Headers)
@@ -49,9 +48,10 @@ class Api:
         records = json.loads(response.text)["result"]
         for record in records:
             # check if the record is type A (only one per domain) this contains
-            # the current IP cloudflare expects the domain to be at
+            # the current IP cloudflare expects the domain to be at and
+            # other info such as the domain name(zone name)
             if record["type"] == "A":
-                return record["content"]
+                return record
             else:
                 # TODO: Add logging for when A record is missing
                 return None
@@ -69,5 +69,5 @@ class Api:
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    a.info["old_ip"] = a.getARecordIP()
+    a.getARecord()
     pprint(a.info)
