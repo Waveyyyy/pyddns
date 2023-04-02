@@ -61,6 +61,7 @@ class Api:
             # the current IP cloudflare expects the domain to be at and
             # other info such as the domain name(zone name)
             if record["type"] == "A":
+                self.record = record
                 return record
             else:
                 # TODO: Add logging for when A record is missing
@@ -68,34 +69,32 @@ class Api:
 
     def __getARecordIP(self):
         """Retrieve the current IP used in the DNS A Record"""
-        record = self.getARecord()
-        return record["content"]
+        return self.record["content"]
 
     def __getZoneName(self):
         """Retrieve the zone name from the DNS A Record"""
-        record = self.getARecord()
-        return record["name"]
+        return self.record["name"]
 
     def __getIdentifier(self):
         """Retrieve the identifier from the DNS A Record"""
-        record = self.getARecord()
-        return record["id"]
+        return self.record["id"]
 
     def __getProxyStatus(self):
         """Retrieve the proxy status from the DNS A Record"""
-        record = self.getARecord()
-        return record["proxied"]
+        return self.record["proxied"]
 
     def __getTTL(self):
         """Retrieve the TTL value from the DNS A Record"""
-        record = self.getARecord()
-        return record["ttl"]
+        return self.record["ttl"]
 
     def updateInfo(self):
         """Update the self.info dictionary
 
-        - Will only update info when required 
+        - Will only update info when required
         """
+        # instead of making an API request for each case,
+        # make a single API request at the start
+        self.getARecord()
         # loop over key, value pair of the self.info dictionary
         # TODO: Log when each item is updated
         for key, value in self.info.items():
@@ -135,8 +134,6 @@ class Api:
             "proxied": self.info['proxied'],
             "ttl": self.info['ttl'],
         }
-        pprint(body)
-        requests.put
         res = requests.put(self.__buildurl(
             f'zones/{self.info["zoneid"]}/dns_records/{self.info["identifier"]}'),
             headers=self.Headers, json=body)
