@@ -24,7 +24,14 @@ class Api:
         }
 
     def __buildurl(self, endpoint):
-        """Creates the url from the base and the desired endpoint"""
+        """Create the url from the base and the desired endpoint
+
+        Parameters:
+        - endpoint -- endpoint separated by forward slashes
+
+        - Success -- return url
+        - Failure -- error out (need change this behaviour)
+        """
         url_base = 'https://api.cloudflare.com/client/v4/'
         url = '/'.join([url_base, endpoint])
         return url
@@ -32,8 +39,8 @@ class Api:
     def getARecord(self):
         """Get the current DNS A record
 
-        - Checks all DNS records of a domain
-        - Checks each record looking for the A record
+        Check all DNS records of a domain looking for the A record
+
         - Success -- returns A record as a dictionary
         - Failure -- returns None
         """
@@ -57,21 +64,24 @@ class Api:
                 return None
 
     def __getARecordIP(self):
+        """Retrieve the current IP used in the DNS A Record"""
         record = self.getARecord()
         return record["content"]
 
     def __getZoneName(self):
+        """Retrieve the zone name from the DNS A Record"""
         record = self.getARecord()
         return record["name"]
 
-    def updateip(self):
+    def updateARecord(self):
         """Update the DNS A record with the IP returned by pub.getexternip()"""
-        pass
+        body = dict()
+        response = requests.put(self.__buildurl(f'zones/{self.info["zoneid"]}/dns_records/', self.Headers, data=body))
 
     def updateInfo(self):
         """Update the self.info dictionary
 
-        - Updates info only when necessary
+        - Will only update info when required 
         """
         # loop over key, value pair of the self.info dictionary
         # TODO: Log when each item is updated
@@ -94,7 +104,7 @@ class Api:
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    pprint(a.getARecord()["name"])
+    pprint(a.getARecord())
     pprint(f'Original:\n{a.info}')
     a.updateInfo()
     pprint(f'Updated:\n{a.info}')
