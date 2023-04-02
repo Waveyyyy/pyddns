@@ -56,18 +56,45 @@ class Api:
                 # TODO: Add logging for when A record is missing
                 return None
 
+    def __getARecordIP(self):
+        record = self.getARecord()
+        return record["content"]
+
+    def __getZoneName(self):
+        record = self.getARecord()
+        return record["name"]
+
     def updateip(self):
         """Update the DNS A record with the IP returned by pub.getexternip()"""
         pass
 
     def updateInfo(self):
-        """Update the self.info dictionary with new information"""
-        # find best way to check all values in self.info
-        pass
+        """Update the self.info dictionary
+
+        - Updates info only when necessary
+        """
+        # loop over key, value pair of the self.info dictionary
+        # TODO: Log when each item is updated
+        for key, value in self.info.items():
+            match key:
+                case "new_ip":
+                    extern = eip.getexternip()
+                    if value != extern:
+                        self.info[key] == extern
+                case "old_ip":
+                    recordIP = self.__getARecordIP()
+                    if value != recordIP:
+                        self.info[key] = recordIP
+                case "domain":
+                    name = self.__getZoneName()
+                    if not value or (value != name):
+                        self.info[key] = name
 
 
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    a.getARecord()
-    pprint(a.info)
+    pprint(a.getARecord()["name"])
+    pprint(f'Original:\n{a.info}')
+    a.updateInfo()
+    pprint(f'Updated:\n{a.info}')
