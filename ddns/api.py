@@ -14,6 +14,9 @@ class Api:
             'old_ip': None,
             'new_ip': eip.getexternip(),
             'domain': None,
+            'identifier': None,
+            'proxied': None,
+            'ttl': None
             # 'last_updated': update_time,
         }
         # headers used for api requests
@@ -73,10 +76,20 @@ class Api:
         record = self.getARecord()
         return record["name"]
 
-    def updateARecord(self):
-        """Update the DNS A record with the IP returned by pub.getexternip()"""
-        body = dict()
-        response = requests.put(self.__buildurl(f'zones/{self.info["zoneid"]}/dns_records/', self.Headers, data=body))
+    def __getIdentifier(self):
+        """Retrieve the identifier from the DNS A Record"""
+        record = self.getARecord()
+        return record["id"]
+
+    def __getProxyStatus(self):
+        """Retrieve the proxy status from the DNS A Record"""
+        record = self.getARecord()
+        return record["proxied"]
+
+    def __getTTL(self):
+        """Retrieve the TTL value from the DNS A Record"""
+        record = self.getARecord()
+        return record["ttl"]
 
     def updateInfo(self):
         """Update the self.info dictionary
@@ -99,12 +112,39 @@ class Api:
                     name = self.__getZoneName()
                     if not value or (value != name):
                         self.info[key] = name
+                case "identifier":
+                    id = self.__getIdentifier()
+                    if not id or (value != id):
+                        self.info[key] = id
+                case "proxied":
+                    proxy = self.__getProxyStatus()
+                    if not value or (value != proxy):
+                        self.info[key] = proxy
+                case "ttl":
+                    ttl = self.__getTTL()
+                    if not value or (value != ttl):
+                        self.info[key] = ttl
+
+    def updateARecord(self):
+        """Update the DNS A record with the IP returned by pub.getexternip()"""
+        self.updateInfo()
+        body = {
+            "content": self.info['new_ip'],
+            "name": self.info['domain'],
+            "type": "A",
+            "proxied": self.info['proxied'],
+            "ttl": self.info['ttl'],
+        }
+        pprint(body)
+        requests.put
+        res = requests.put(self.__buildurl(
+            f'zones/{self.info["zoneid"]}/dns_records/{self.info["identifier"]}'),
+            headers=self.Headers, json=body)
+        pprint(res.text)
 
 
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    pprint(a.getARecord())
-    pprint(f'Original:\n{a.info}')
-    a.updateInfo()
-    pprint(f'Updated:\n{a.info}')
+    pprint(a.updateARecord())
+    pprint(a.info)
