@@ -125,8 +125,14 @@ class Api:
                         self.info[key] = ttl
 
     def updateARecord(self):
-        """Update the DNS A record with the IP returned by pub.getexternip()"""
+        """Update the DNS A record with new IP address
+
+        - Success -- return Status Code (not final behaviour)
+        - Failure -- return None (not final behaviour)
+        """
         self.updateInfo()
+        if self.info["new_ip"] == self.info["old_ip"]:
+            return None
         body = {
             "content": self.info['new_ip'],
             "name": self.info['domain'],
@@ -137,7 +143,7 @@ class Api:
         res = requests.put(self.__buildurl(
             f'zones/{self.info["zoneid"]}/dns_records/{self.info["identifier"]}'),
             headers=self.Headers, json=body)
-        pprint(res.text)
+        return res.status_code
 
 
 if __name__ == "__main__":
