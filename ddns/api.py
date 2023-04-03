@@ -4,6 +4,7 @@ import externip as eip
 from dotenv import dotenv_values
 import json
 from pprint import pprint
+import logging as log
 
 
 class Api:
@@ -26,6 +27,11 @@ class Api:
             'Content-Type': 'application/json',
         }
 
+        # initialise logging options
+        log.basicConfig(filename='ddns.log', filemode='w',
+                        format='%(name)s - [%(levelname)s] %(message)s',
+                        level=log.DEBUG)
+
     def __buildurl(self, endpoint):
         """Create the url from the base and the desired endpoint
 
@@ -33,11 +39,18 @@ class Api:
         - endpoint -- endpoint separated by forward slashes
 
         - Success -- return url
-        - Failure -- error out (need change this behaviour)
+        - Failure -- exit with TypeError
         """
         url_base = 'https://api.cloudflare.com/client/v4/'
-        url = '/'.join([url_base, endpoint])
-        return url
+        try:
+            log.debug(f'__buildurl: endpoint = {endpoint}')
+            url = '/'.join([url_base, endpoint])
+        except TypeError:
+            log.critical('__buildurl: URL failed to build - TypeError')
+            log.info('Exiting...')
+            exit(TypeError)
+        else:
+            return url
 
     def getARecord(self):
         """Get the current DNS A record
@@ -140,14 +153,18 @@ class Api:
             "proxied": self.info['proxied'],
             "ttl": self.info['ttl'],
         }
-        res = requests.put(self.__buildurl(
+        res = json.loads(requests.put(self.__buildurl(
             f'zones/{self.info["zoneid"]}/dns_records/{self.info["identifier"]}'),
-            headers=self.Headers, json=body)
-        return res.status_code
+            headers=self.Headers, json=body).text)
+        pprint(res)
+        if res["success"]:
+            return res
+        else:
+            return res
 
 
 if __name__ == "__main__":
     a = Api()
     pprint(a.Headers)
-    pprint(a.updateARecord())
+    pprint(a.getARecord())
     pprint(a.info)
