@@ -37,7 +37,7 @@ def get_wan_ip_http(provider: str, timeout: float = 5.0) -> Optional[str]:
     except requests.HTTPError:
         return None
 
-def get_wan_ip_upnp() -> Optional[str]:
+def get_wan_ip_upnp(fallback: bool) -> Optional[str]:
     """
     Get WAN IP adress from router using uPnP.
     """
@@ -51,7 +51,13 @@ def get_wan_ip_upnp() -> Optional[str]:
         return upnp.externalipaddress() # Return WAN IP as a string
 
     except Exception:
-        return None
+        if fallback:
+            for provider in FALLBACK_PROVIDERS.keys():
+                ip: str | None = get_wan_ip_http(provider)
+                if ip:
+                    return ip
+
+
 
 
 if __name__ == "__main__":
