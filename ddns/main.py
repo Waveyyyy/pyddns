@@ -2,8 +2,11 @@ import miniupnpc
 from dotenv import dotenv_values
 from typing import Optional
 import requests
+import json
+import regex
 
 FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values(".fallback_providers")
+IP_REGEX: str = r"^[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}.[0-9]{1,3}$"
 
 def get_wan_ip_http(provider: str, timeout: float = 5.0) -> Optional[str]:
     """
@@ -12,10 +15,25 @@ def get_wan_ip_http(provider: str, timeout: float = 5.0) -> Optional[str]:
     url = FALLBACK_PROVIDERS.get(provider)
     if not url:
         raise ValueError(f"Unknown provider '{provider}'. Options\n{list(FALLBACK_PROVIDERS.keys())}")
+
     try:
         resp = requests.get(url=url, timeout=timeout)
         resp.raise_for_status()
-        return resp.text.strip()
+        wan_ip: str = resp.text.strip()
+
+        # check if the response was plain text or json
+        if "json" in resp.headers.get("content-type", ""):
+            for val in json.loads(wan_ip).values(): # iterate over values incase there are multiple
+                if regex.match(IP_REGEX, val): # use regex to check if any values are IP addresses
+                    wan_ip=val
+                    break
+                else:
+                    wan_ip=""
+            if not wan_ip:
+                return None # if no values were IP's, return None to signify failure
+
+        return wan_ip
+
     except requests.HTTPError:
         return None
 
