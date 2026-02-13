@@ -1,7 +1,4 @@
 .cache/
-.project
-ddns/.project
+.venv/*
 .env
-__pycache__
-research/
-ddns.log
+__pycache__/

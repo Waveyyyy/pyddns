@@ -1,0 +1,29 @@
+version = 1
+revision = 3
+requires-python = ">=3.13"
+
+[[package]]
+name = "miniupnpc"
+version = "2.3.3"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/73/8f/4d7964914386dcd82da566e04af9a8744d2025e2d68fa37689d5c4e152cf/miniupnpc-2.3.3.tar.gz", hash = "sha256:ee5e957df828d2fa1cc364e60c583d10439110888f086c9182071c96a374b2ad", size = 79010, upload-time = "2025-05-26T23:01:39.214Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/c0/e5/78fc19acb51dd19d2493309e0ae228ce7475f53a8796769c18bade7fd4af/miniupnpc-2.3.3-cp313-cp313-macosx_13_0_arm64.whl", hash = "sha256:7ba6d2bc1809f6699ce151455ce58c0a26f7d1a6febc0175c10b990b2bf9cf75", size = 29521, upload-time = "2025-05-26T23:08:19.074Z" },
+    { url = "https://files.pythonhosted.org/packages/27/94/7142d42763f076c731bf4cacbc805fb85f734386b7546969729b06c6e7cf/miniupnpc-2.3.3-cp313-cp313-macosx_13_0_universal2.whl", hash = "sha256:6d606171dbe9b8ceb9cc5d9eb07035013a9ff2b58704a55466deec53795006d6", size = 36509, upload-time = "2025-05-26T23:08:20.645Z" },
+    { url = "https://files.pythonhosted.org/packages/fd/6c/ecaa3dff14bdd9ac1b963e6e457aa39766a42a45a1b7a28bc5f4f7ae0cf1/miniupnpc-2.3.3-cp313-cp313-macosx_13_0_x86_64.whl", hash = "sha256:1bdf467cd1b656750f2f011b0ab8971cf726b3e8a454189f85e551f1a03bbf7f", size = 30210, upload-time = "2025-05-26T23:08:21.822Z" },
+    { url = "https://files.pythonhosted.org/packages/28/f6/f73048a6359d539d418c136fb201367e71e02d716fa4cd6862eec5f1ce97/miniupnpc-2.3.3-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:191013f4533e5eece06292ea1f5a692de0f5daa436b5d2774ed72eb56014f4d1", size = 47476, upload-time = "2025-05-26T23:08:23.425Z" },
+    { url = "https://files.pythonhosted.org/packages/43/bc/f8311b8d5312530a44527e3f226cf9e49c3a878508ca389cbf0c14d44522/miniupnpc-2.3.3-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:56f2818da9a13dfd80e3e5f3a6036f27f2eec0f0fa0c6657ffa9bdc0d331bdf0", size = 47797, upload-time = "2025-05-26T23:08:27.272Z" },
+    { url = "https://files.pythonhosted.org/packages/57/62/9376b83824805dbf4102ecc1ff52fd88f1b2c5f4a0b464601face50f4512/miniupnpc-2.3.3-cp313-cp313-win32.whl", hash = "sha256:19e01f00cdcf63d98b19b75756ebc199dffe69bf33e55828241dbebeb385f61b", size = 213140, upload-time = "2025-05-26T23:16:25.667Z" },
+    { url = "https://files.pythonhosted.org/packages/7b/48/dee5063f100313737e089f71ebeec4617996ae808a21ba5e8e2c406f75df/miniupnpc-2.3.3-cp313-cp313-win_amd64.whl", hash = "sha256:53f7f1aae294754db13e7f109c34137d6c00640597aa66f66d4ca57aae1b12b9", size = 214603, upload-time = "2025-05-26T23:21:12.467Z" },
+]
+
+[[package]]
+name = "pyddns"
+version = "0.1.0"
+source = { virtual = "." }
+dependencies = [
+    { name = "miniupnpc" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "miniupnpc", specifier = ">=2.3.3" }]
