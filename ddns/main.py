@@ -1,9 +1,27 @@
 import miniupnpc
+from dotenv import dotenv_values
 from typing import Optional
+import requests
 
-def get_wan_ip() -> Optional[str]:
+FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values(".fallback_providers")
+
+def get_wan_ip_http(provider: str, timeout: float = 5.0) -> Optional[str]:
     """
-    Get WAN ip adress from router using uPnP
+    Get WAN IP address from an external provider.
+    """
+    url = FALLBACK_PROVIDERS.get(provider)
+    if not url:
+        raise ValueError(f"Unknown provider '{provider}'. Options\n{list(FALLBACK_PROVIDERS.keys())}")
+    try:
+        resp = requests.get(url=url, timeout=timeout)
+        resp.raise_for_status()
+        return resp.text.strip()
+    except requests.HTTPError:
+        return None
+
+def get_wan_ip_upnp() -> Optional[str]:
+    """
+    Get WAN IP adress from router using uPnP.
     """
     try:
         upnp = miniupnpc.UPnP()
@@ -13,6 +31,7 @@ def get_wan_ip() -> Optional[str]:
 
         upnp.selectigd() # Select Internet Gateway Device (router)
         return upnp.externalipaddress() # Return WAN IP as a string
+
     except Exception:
         return None
 
