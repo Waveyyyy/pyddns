@@ -4,53 +4,54 @@ from typing import Optional
 import requests
 import json
 
-FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values(".fallback_providers")
+class ExternalIP():
 
-def get_wan_ip_http(provider: str, timeout: float = 5.0) -> Optional[str]:
-    """
-    Get WAN IP address from an external provider.
-    """
-    url = FALLBACK_PROVIDERS.get(provider)
-    if not url:
-        raise ValueError(f"Unknown provider '{provider}'. Options\n{list(FALLBACK_PROVIDERS.keys())}")
+    def __init__(self):
+        self.FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values(".fallback_providers")
 
-    try:
-        resp = requests.get(url=url, timeout=timeout)
-        resp.raise_for_status()
-        wan_ip: str = resp.text.strip()
+    def get_wan_ip_http(self, provider: str, timeout: float = 5.0) -> Optional[str]:
+        """
+        Get WAN IP address from an external provider.
+        """
+        url = self.FALLBACK_PROVIDERS.get(provider)
+        if not url:
+            raise ValueError(f"Unknown provider '{provider}'. Options\n{list(self.FALLBACK_PROVIDERS.keys())}")
 
-        # check if the response was plain text or json
-        if "json" in resp.headers.get("content-type", ""):
-            return json.loads(wan_ip.split(",")[0]).values()
+        try:
+            resp = requests.get(url=url, timeout=timeout)
+            resp.raise_for_status()
+            wan_ip: str = resp.text.strip()
 
-        return wan_ip
+            # check if the response was plain text or json
+            if "json" in resp.headers.get("content-type", ""):
+                return json.loads(wan_ip.split(",")[0]).values()
 
-    except requests.HTTPError:
-        return None
+            return wan_ip
 
-def get_wan_ip_upnp(fallback: bool) -> Optional[str]:
-    """
-    Get WAN IP adress from router using uPnP.
-    """
-    try:
-        upnp = miniupnpc.UPnP()
-        upnp.discoverdelay = 200 # Discovery timeout (default: 2000)
-        if not upnp.discover(): # Number of devices (0 is a failure state)
+        except requests.HTTPError:
             return None
 
-        upnp.selectigd() # Select Internet Gateway Device (router)
-        return upnp.externalipaddress() # Return WAN IP as a string
+    def get_wan_ip_upnp(self, fallback: bool) -> Optional[str]:
+        """
+        Get WAN IP adress from router using uPnP.
+        """
+        try:
+            upnp = miniupnpc.UPnP()
+            upnp.discoverdelay = 200 # Discovery timeout (default: 2000)
+            if not upnp.discover(): # Number of devices (0 is a failure state)
+                return None
 
-    except Exception:
-        if fallback:
-            for provider in FALLBACK_PROVIDERS.keys():
-                ip: str | None = get_wan_ip_http(provider)
-                if ip:
-                    return ip
+            upnp.selectigd() # Select Internet Gateway Device (router)
+            return upnp.externalipaddress() # Return WAN IP as a string
 
-
+        except Exception:
+            if fallback:
+                for provider in self.FALLBACK_PROVIDERS.keys():
+                    ip: str | None = self.get_wan_ip_http(provider)
+                    if ip:
+                        return ip
 
 
 if __name__ == "__main__":
-    print(get_wan_ip())
+    print(ExternalIP().get_wan_ip_upnp(True))
 
