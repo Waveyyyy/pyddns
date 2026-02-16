@@ -54,6 +54,7 @@ class ExternalIP():
 
 
 class Cloudflare():
+    """Manages a single Cloudflare DNS A record with local caching."""
 
     def __init__(self, api_token: str, zone_id: str, record_name: str):
         self.headers = {
@@ -67,6 +68,7 @@ class Cloudflare():
         self.cached_ip: str | None = None
 
     def _get_record(self) -> tuple[str, str]:
+        """Fetch record ID and current IP from Cloudflare. Called once on startup."""
         resp = requests.get(
             f"{self.cf_api}/zones/{self.zone_id}/dns_records",
             headers = self.headers,
@@ -81,7 +83,11 @@ class Cloudflare():
         return records[0]["id"], records[0]["content"]
 
     def get_ip(self):
-        pass
+        """Get the current IP address from the cache, or fetch if not cached."""
+        if not self.cached_ip:
+            self.record_id, self.cached_ip = self._get_record()
+
+        return self.cached_ip
 
     def update_ip(self):
         pass
@@ -95,7 +101,7 @@ if __name__ == "__main__":
         record_name=cloudflare_data["CF_RECORD_NAME"] if cloudflare_data["CF_RECORD_NAME"] else str(getenv("CF_RECORD_NAME"))
     )
 
-    print(cf._get_record())
+    print(cf.get_ip())
 
     print(ExternalIP().get_wan_ip_upnp(True))
 
