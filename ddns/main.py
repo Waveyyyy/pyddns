@@ -89,8 +89,29 @@ class Cloudflare():
 
         return self.cached_ip
 
-    def update_ip(self):
-        pass
+    def update_ip(self, new_ip: str) -> bool:
+        """Update the A record and refresh the cache."""
+        if self.record_id is None:
+            self.record_id, self.cached_ip = self._get_record()
+
+        # https://developers.cloudflare.com/api/resources/dns/subresources/records/methods/get/
+        resp = requests.patch(
+            f"{self.cf_api}/zones/{self.zone_id}/dns_records/{self.record_id}",
+            headers=self.headers,
+            json={
+                "type": "A",
+                "name": self.record_name,
+                "content": new_ip,
+                "ttl": 1,
+                "proxied": False
+            }
+        )
+        resp.raise_for_status()
+
+        if resp.json()["success"]:
+            self.cached_ip = new_ip
+            return True
+        return False
 
 
 if __name__ == "__main__":
