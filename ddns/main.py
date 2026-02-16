@@ -1,5 +1,5 @@
 import miniupnpc
-from dotenv import dotenv_values
+from dotenv import dotenv_values,load_dotenv
 from typing import Optional
 import requests
 import json
@@ -12,7 +12,7 @@ from pathlib import Path
 class ExternalIP():
 
     def __init__(self):
-        self.FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values(".fallback_providers")
+        self.FALLBACK_PROVIDERS: dict[str, str | None] = dotenv_values("fallback_providers")
 
     def get_wan_ip_http(self, provider: str, timeout: float = 5.0) -> Optional[str]:
         """
@@ -155,6 +155,7 @@ if __name__ == "__main__":
         stream=sys.stdout,
     )
     log = logging.getLogger("ddns")
+    load_dotenv(".env")
 
     cf = Cloudflare(
         api_token=str(getenv("CF_API_TOKEN")),
