@@ -1,0 +1,12 @@
+.git
+.venv
+__pycache__
+*.pyc
+.env
+.cloudflare
+.fallback_providers
+example.env
+README.md
+LICENSE
+docs/
+pyrightconfig.json
