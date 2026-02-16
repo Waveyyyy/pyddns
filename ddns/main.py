@@ -63,7 +63,7 @@ class ExternalIP():
                         log.info(f"WAN IP detected via http: {ip}")
                         return ip
                     else:
-                        log.error("WAN IP detectian via http fallback failed")
+                        log.error("WAN IP detection via http fallback failed")
 
 
 class Cloudflare():
@@ -163,8 +163,10 @@ if __name__ == "__main__":
         record_name=str(getenv("CF_RECORD_NAME"))
     )
     timeout = int(getenv("TIMEOUT")) if getenv("TIMEOUT") else 600
+    EIP = ExternalIP()
+
     while True:
-        wan_ip = ExternalIP().get_wan_ip_upnp(fallback=True)
+        wan_ip = EIP.get_wan_ip_upnp(fallback=True)
         dns_ip = cf.get_ip()
 
         if wan_ip != dns_ip:
