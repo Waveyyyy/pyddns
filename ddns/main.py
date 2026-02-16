@@ -4,6 +4,7 @@ from typing import Optional
 import requests
 import json
 from os import getenv
+import time
 
 class ExternalIP():
 
@@ -121,8 +122,12 @@ if __name__ == "__main__":
         zone_id=cloudflare_data["CF_ZONE_ID"] if cloudflare_data["CF_ZONE_ID"] else str(getenv("CF_ZONE_ID")),
         record_name=cloudflare_data["CF_RECORD_NAME"] if cloudflare_data["CF_RECORD_NAME"] else str(getenv("CF_RECORD_NAME"))
     )
+    timeout = int(getenv("TIMEOUT")) if getenv("TIMEOUT") else 600
+    while True:
+        wan_ip = ExternalIP().get_wan_ip_upnp(fallback=True)
+        dns_ip = cf.get_ip()
 
-    print(cf.get_ip())
+        if wan_ip != dns_ip:
+            cf.update_ip(str(wan_ip))
 
-    print(ExternalIP().get_wan_ip_upnp(True))
-
+        time.sleep(timeout)
