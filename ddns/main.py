@@ -3,6 +3,7 @@ from dotenv import dotenv_values
 from typing import Optional
 import requests
 import json
+from os import getenv
 
 class ExternalIP():
 
@@ -52,6 +53,49 @@ class ExternalIP():
                         return ip
 
 
+class Cloudflare():
+
+    def __init__(self, api_token: str, zone_id: str, record_name: str):
+        self.headers = {
+            "Authorization": f"Bearer {api_token}",
+            "Content-Type": "application/json"
+        }
+        self.zone_id = zone_id
+        self.record_name = record_name
+        self.cf_api = "https://api.cloudflare.com/client/v4"
+        self.record_id: str | None = None
+        self.cached_ip: str | None = None
+
+    def _get_record(self) -> tuple[str, str]:
+        resp = requests.get(
+            f"{self.cf_api}/zones/{self.zone_id}/dns_records",
+            headers = self.headers,
+            params = {"type": "A", "name": self.record_name}
+        )
+        resp.raise_for_status()
+        records = resp.json()["result"]
+
+        if not records:
+            raise ValueError(f"No A record found for {self.record_name}")
+
+        return records[0]["id"], records[0]["content"]
+
+    def get_ip(self):
+        pass
+
+    def update_ip(self):
+        pass
+
+
 if __name__ == "__main__":
+    cloudflare_data: dict[str, str | None] = dotenv_values(".cloudflare")
+    cf = Cloudflare(
+        api_token=cloudflare_data["CF_API_TOKEN"] if cloudflare_data["CF_API_TOKEN"] else str(getenv("CF_API_TOKEN")),
+        zone_id=cloudflare_data["CF_ZONE_ID"] if cloudflare_data["CF_ZONE_ID"] else str(getenv("CF_ZONE_ID")),
+        record_name=cloudflare_data["CF_RECORD_NAME"] if cloudflare_data["CF_RECORD_NAME"] else str(getenv("CF_RECORD_NAME"))
+    )
+
+    print(cf._get_record())
+
     print(ExternalIP().get_wan_ip_upnp(True))
 
