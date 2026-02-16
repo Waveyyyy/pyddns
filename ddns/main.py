@@ -169,5 +169,5 @@ if __name__ == "__main__":
         if wan_ip != dns_ip:
             log.info(f"IP changed: {dns_ip} -> {wan_ip}, updating Cloudflare A record")
             cf.update_ip(str(wan_ip))
-        time.sleep(timeout)
         Path("/tmp/ddns_healthy").touch()
+        time.sleep(timeout)
